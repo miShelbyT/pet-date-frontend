@@ -1,6 +1,6 @@
 body {
   font-family: 'Jost', sans-serif;
-
+  margin: 0;
 }
 
 #pet-header {
@@ -9,7 +9,7 @@ body {
     background: #A8E6CE;
     opacity: .8;
     height: 6rem;
-    padding: 1rem;
+    padding: 0em 0em 2em 0em;
 
 }
 
@@ -47,10 +47,16 @@ body {
   box-shadow: 3px 4px #FF8C94; 
 }
 
+.card h2 {
+  margin: .5em;
+}
+
 .pet-avatar {
     justify-self: center;
     height: 11rem;
     width: auto;
+    border: 1px solid black;
+    border-radius:0.25rem;
 }
 
 
@@ -63,34 +69,35 @@ body {
 }
 
 .modal-content {
-  width: 600px;
-  height: 600px;
-  margin: 0 auto;
+  width: 800px;
+  height: auto;
+  margin-top: 2em;
+  margin-left: auto;
+  margin-right: auto;
   position: relative;
   background-color:#ddf8ee;
   z-index: 2;
-  padding: 50px 50px;
+  padding: 70px;
   overflow: auto;
   
 }
 
+.modal-content p {
+  margin-left: 100px;
+  display: inline-block;
+}
+
 .modal-content li {
   list-style: none;
+  line-height: 1.8em;
 }
 
 .modal-content img{
-    image-orientation: left;
+    margin-left: 2.5em;
+    display: inline-block;
     border-radius: 50%;
     height: 150px;
     width: auto;
-}
-
-.modal-container img {
-  image-orientation: left;
-    border-radius: 50%;
-    height: 150px;
-    width: auto;
-    
 }
 
 .hide {
@@ -104,11 +111,11 @@ body {
 
 .btn-styles {
   display: inline-block;
-  padding:0.35em .75em;
+  padding:.35em .75em;
   border:0.1em solid #354941;
   background-color:#f5b9be; 
-  margin:0.5em;
-  border-radius:0.5rem;
+  margin:0.85em;
+  border-radius:0.25rem;
   box-sizing: border-box;
   text-decoration:none;
   font-family:'Roboto',sans-serif;
@@ -123,10 +130,24 @@ body {
     background-color:#FF8C94 
   }
 
+  .wanna-play {
+    margin-left: 35%;
+  }
+
+  .pd-delete {
+    float:right;
+    margin:0 50px 0 0;
+  }
+
+  .pd-update {
+    float:right;
+    margin:0 10px 0 0;
+  }
+
   select, input {
     padding:0.25em .25em;
     margin:.5em;
-    border-radius: 0.5rem;
+    border-radius: 0.25rem;
     border: 1.5px solid #A8E6CE;
     height: 17px;
     background-color: #EFEFEF;
@@ -137,6 +158,4 @@ body {
     background-color:#EFEFEF;
   }
 
-  /* .modal-deets {
-    margin-inline-start: 15px
-  } */
+

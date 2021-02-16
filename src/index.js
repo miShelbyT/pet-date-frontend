@@ -18,8 +18,9 @@ const pdUrl = "http://localhost:3000/api/v1/playdates"
 
 // INITIAL 
 /*********** All Database Fetches ***************/
-function fetchPets() {
-  fetch(petUrl)
+// GET all pets
+async function fetchPets() {
+  await fetch(petUrl)
   .then((resp) => resp.json())
   .then((petArray) => {
     petArray.forEach((pet) => {
@@ -29,9 +30,24 @@ function fetchPets() {
   })
 }
 
+// POST new Pet
+async function createPet(addPetObj){
+  await fetch(petUrl, {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    'Accept': 'application/json',
+  },
+  body: JSON.stringify(addPetObj)
+})
+  .then(response => response.json())
+  .then(newPetObj => {
+    renderPets(newPetObj)})
+}
+
 // Fetch Data to render onto Modal
-const petDetails = (id) => {
-  fetch(`${petUrl}/${id}`)
+async function petDetails(id){
+  await fetch(`${petUrl}/${id}`)
     .then((resp) => resp.json())
     .then((petObj) => {
       renderPet(petObj)
@@ -55,8 +71,8 @@ function deletePlaydate(id) {
 }
 
 
-/*********** Playdate Posting to Backend **********/
-const pdPost = (pdObj) => {
+// fetch Playdate POST
+function pdPost(pdObj) {
   fetch(`${pdUrl}`, {
     method: 'POST',
     headers: {
@@ -89,8 +105,8 @@ const pdPost = (pdObj) => {
     })
 }
 
-/************* Playdate Updating Backend **************/
-const pdUpdate = (newpdObj) => {
+// fetch Playdate PATCH
+function pdUpdate(newpdObj) {
   fetch(`${pdUrl}/${newpdObj.id}`, {
     method: 'PATCH',
     headers: {
@@ -165,7 +181,7 @@ newPetButton.addEventListener("click", event => {
 /*************** Rendering Functions ****************/
 
 // Rendering Preliminary Data of all pets onto cards
-const renderPets = (pet) => {
+function renderPets(pet){
   const petDiv = document.createElement("div")
   const petImg = document.createElement("img")
   const petName = document.createElement("h2")
@@ -198,8 +214,8 @@ const renderPets = (pet) => {
 }
 
 
-// renderPet renders inside modal
-const renderPet = (petObj) => {
+// renderPet renders Pet's info onto modal content
+function renderPet(petObj){
 
   const petName = document.createElement("h2")
   const petBreed = document.createElement("h3")
@@ -224,6 +240,7 @@ const renderPet = (petObj) => {
   makePlaydateBtn.dataset.id = petObj.id
   makePlaydateBtn.id = ("pd-button")
   makePlaydateBtn.className = ("btn-styles")
+  makePlaydateBtn.classList.add("wanna-play")
 
   if (petObj.age > 1) {
     petAge.textContent = `Age: ${petObj.age} years old`
@@ -238,9 +255,10 @@ const renderPet = (petObj) => {
 };
 
 
-// Iterates thru to render playdate info onto Modal
+// Iterates thru to render playdate info onto modal content
 function playDates(petObj) {
-  petObj.playdates.forEach(playdate => {
+  if(petObj.playdates) {
+    petObj.playdates.forEach(playdate => {
     const date = document.createElement("li")
     const deleteBtn = document.createElement("button")
     const updateBtn = document.createElement("button")
@@ -265,6 +283,7 @@ function playDates(petObj) {
     date.append(deleteBtn, updateBtn)
     allDates.append(date)
   })
+}
 
 }
 
@@ -381,6 +400,7 @@ const playdateUpdate = (oldPDObj) => {
     } 
     
     pdUpdate(newpdObj)
+    // hides form after update
     form.style.display = "none"
   })
 
@@ -452,20 +472,5 @@ const renderPetForm = () => {
 }
 
 
-
-const createPet = (addPetObj) => {
-  fetch(petUrl, {
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json',
-    'Accept': 'application/json',
-  },
-  body: JSON.stringify(addPetObj)
-})
-  .then(response => response.json())
-  .then(newPetObj => {
-    renderPets(newPetObj)})
-
-
-}
+// initial invocation, rendering of pets for app
 fetchPets()
