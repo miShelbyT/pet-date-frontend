@@ -208,7 +208,7 @@ function renderPets(pet){
   petImg.alt = pet.name
   petImg.className = "pet-avatar"
 
-  petDiv.append(petImg, petName, petButton, petType)
+  petDiv.append(petImg, petName, petType, petButton)
 
   petContainer.append(petDiv)
 }
@@ -234,7 +234,7 @@ function renderPet(petObj){
 
   // variable created so we can append playdates
   allDates = document.createElement("ul")
-  allDates.textContent = "Playdates"
+  allDates.textContent = "Playdates:"
 
   makePlaydateBtn.textContent = "Wanna Play?"
   makePlaydateBtn.dataset.id = petObj.id

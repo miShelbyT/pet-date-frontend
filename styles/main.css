@@ -40,14 +40,15 @@ body {
   border-radius: 2rem;
   border: grey solid 1px;
   padding: 1rem;
-  width: 15rem;
+  width: 17rem;
   height: 20rem;
   display: inline-grid;
   margin: 1rem 2rem;
   box-shadow: 3px 4px #FF8C94; 
 }
 
-.card h2 {
+.card h2, h4 {
+  line-height: .15em;
   margin: .5em;
 }
 
@@ -85,6 +86,7 @@ body {
 .modal-content p {
   margin-left: 100px;
   display: inline-block;
+  line-height: 1.2em;
 }
 
 .modal-content li {
