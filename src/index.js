@@ -19,8 +19,8 @@ const pdUrl = "http://localhost:3000/api/v1/playdates"
 // INITIAL 
 /*********** All Database Fetches ***************/
 // GET all pets
-async function fetchPets() {
-  await fetch(petUrl)
+ function fetchPets() {
+   fetch(petUrl)
   .then((resp) => resp.json())
   .then((petArray) => {
     petArray.forEach((pet) => {
@@ -31,8 +31,8 @@ async function fetchPets() {
 }
 
 // POST new Pet
-async function createPet(addPetObj){
-  await fetch(petUrl, {
+ function createPet(addPetObj){
+   fetch(petUrl, {
   method: 'POST',
   headers: {
     'Content-Type': 'application/json',
@@ -46,8 +46,8 @@ async function createPet(addPetObj){
 }
 
 // Fetch Data to render onto Modal
-async function petDetails(id){
-  await fetch(`${petUrl}/${id}`)
+ function petDetails(id){
+   fetch(`${petUrl}/${id}`)
     .then((resp) => resp.json())
     .then((petObj) => {
       renderPet(petObj)
