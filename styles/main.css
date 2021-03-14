@@ -6,7 +6,7 @@ body {
 #pet-header {
     display: flex;
     justify-content: center;
-    background: #A8E6CE;
+    background: #6fb1e7;
     opacity: .8;
     height: 6rem;
     padding: 0em 0em 2em 0em;
@@ -16,7 +16,7 @@ body {
 #nav-bar {
     display: block;
     justify-content: center;
-    background: #FF8C94;
+    background: #a4eba9;
     opacity: .8;
     height: auto;
     padding: 1rem;
@@ -44,7 +44,7 @@ body {
   height: 20rem;
   display: inline-grid;
   margin: 1rem 2rem;
-  box-shadow: 3px 4px #FF8C94; 
+  box-shadow: 3px 4px #464e47; 
 }
 
 .card h2, h4 {
@@ -70,24 +70,19 @@ body {
 }
 
 .modal-content {
-  width: 800px;
-  height: auto;
+  width: 65%;
+  height: 65%;
   margin-top: 2em;
   margin-left: auto;
   margin-right: auto;
   position: relative;
-  background-color:#ddf8ee;
+  background-color:#d0ecd1;
   z-index: 2;
-  padding: 70px;
+  padding: 40px;
   overflow: auto;
   
 }
 
-.modal-content p {
-  margin-left: 100px;
-  display: inline-block;
-  line-height: 1.2em;
-}
 
 .modal-content li {
   list-style: none;
@@ -95,12 +90,29 @@ body {
 }
 
 .modal-content img{
-    margin-left: 2.5em;
-    display: inline-block;
+    margin-left: 2em;
+    margin-right: 2em;
+    float: left;
     border-radius: 50%;
-    height: 150px;
+    height: 15em;
     width: auto;
 }
+
+
+.info h2{
+  margin-top: 1.5em;
+}
+
+.info h2, h3{
+  display: inline-block;
+  line-height: .25em;
+}
+
+.ul-div {
+  position: absolute; 
+  bottom: 0px;
+}
+
 
 .hide {
   display: none;
@@ -113,16 +125,20 @@ body {
 
 .btn-styles {
   display: inline-block;
+  width: max-content;
   padding:.35em .75em;
   border:0.1em solid #354941;
-  background-color:#f5b9be; 
-  margin:0.85em;
+  background-color:#ee4f4f; 
+  margin:0.75em;
+  margin-left: auto;
+  margin-right: auto;
   border-radius:0.25rem;
   box-sizing: border-box;
   text-decoration:none;
   font-family:'Roboto',sans-serif;
+  font-size: 0.75em;
   font-weight:bold;
-  color:#000000;
+  color:#051638;
   text-align:center;
   transition: all 0.2s;
   }
@@ -138,12 +154,12 @@ body {
 
   .pd-delete {
     float:right;
-    margin:0 50px 0 0;
+    margin: 0px 20px;
   }
 
   .pd-update {
     float:right;
-    margin:0 10px 0 0;
+    margin: 0px 20px;
   }
 
   select, input {
