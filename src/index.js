@@ -1,4 +1,5 @@
-//DOM ELEMENT/VARIABLES
+//DOM ELEMENTS
+
 const petContainer = document.querySelector("#pet-collection")
 const modal = document.querySelector(".modal-container")
 const modalContent = document.querySelector(".modal-content")
@@ -7,54 +8,90 @@ const navSpan = document.querySelector("#nav-span")
 
 let simplePetArray = []
 
-
 let allDates;
 let toggle = "hide"
 toggleModal(toggle)
+
 
 /***************** URL variables *****************/
 const petUrl = "http://localhost:3000/api/v1/pets"
 const pdUrl = "http://localhost:3000/api/v1/playdates"
 
-// INITIAL 
-/*********** All Database Fetches ***************/
+
+/*********** Fetches ***************/
+// PET FETCHES
+
 // GET all pets
- function fetchPets() {
-   fetch(petUrl)
-  .then((resp) => resp.json())
-  .then((petArray) => {
-    petArray.forEach((pet) => {
-      renderPets(pet)
-      simplePetArray.push(pet.name)
+function fetchPets() {
+  fetch(petUrl)
+    .then((resp) => resp.json())
+    .then((petArray) => {
+      petArray.forEach((pet) => {
+        renderPets(pet)
+        simplePetArray.push(pet.name)
+      })
     })
-  })
 }
 
 // POST new Pet
- function createPet(addPetObj){
-   fetch(petUrl, {
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json',
-    'Accept': 'application/json',
-  },
-  body: JSON.stringify(addPetObj)
-})
-  .then(response => response.json())
-  .then(newPetObj => {
-    renderPets(newPetObj)})
+function createPet(addPetObj) {
+  fetch(petUrl, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+    },
+    body: JSON.stringify(addPetObj)
+  })
+    .then(response => response.json())
+    .then(newPetObj => {
+      console.log(newPetObj)
+      renderPets(newPetObj)
+    })
 }
 
-// Fetch Data to render onto Modal
- function petDetails(id){
-   fetch(`${petUrl}/${id}`)
+
+// GET Pet/PD Data to render onto Modal
+function petDetails(id) {
+  fetch(`${petUrl}/${id}`)
     .then((resp) => resp.json())
     .then((petObj) => {
       renderPet(petObj)
     });
 };
 
-//fetch Delete Playdate
+
+// PLAYDATE FETCHES
+
+// Playdate POST
+function pdPost(pdObj) {
+  fetch(`${pdUrl}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+    },
+    body: JSON.stringify(pdObj)
+  })
+    .then(response => response.json())
+    .then(pdObj => createPlaydate(pdObj))
+}
+
+//  Playdate PATCH
+function pdUpdate(newpdObj) {
+  fetch(`${pdUrl}/${newpdObj.id}`, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+    },
+    body: JSON.stringify(newpdObj)
+  })
+    .then(response => response.json())
+    .then(updatedPD => updatePD(updatedPD))
+}
+
+// Delete Playdate
 function deletePlaydate(id) {
   fetch(`${pdUrl}/${id}`, {
     method: `DELETE`,
@@ -67,73 +104,6 @@ function deletePlaydate(id) {
     .then(data => {
       li = document.querySelector(`li[data-id="${data.id}"]`)
       li.remove()
-    })
-}
-
-
-// fetch Playdate POST
-function pdPost(pdObj) {
-  fetch(`${pdUrl}`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-    },
-    body: JSON.stringify(pdObj)
-  })
-    .then(response => response.json())
-    .then(pdObj => {   //pd stands for playdate
-      const li = document.createElement("li")
-      li.dataset.id = pdObj.id
-      li.textContent = `Date: ${pdObj.date}, Location: ${pdObj.location}`
-
-      const deleteBtn = document.createElement("button")
-      const updateBtn = document.createElement("button")
-
-      deleteBtn.textContent = "Cancel Playdate"
-      deleteBtn.dataset.id = pdObj.id
-      deleteBtn.className = "btn-styles"
-      deleteBtn.classList.add("pd-delete")
-
-      updateBtn.textContent = "Update Playdate"
-      updateBtn.dataset.id = pdObj.id
-      updateBtn.className = "pd-update"
-      updateBtn.classList.add("btn-styles")
-
-      li.append(deleteBtn, updateBtn)
-      allDates.append(li)
-    })
-}
-
-// fetch Playdate PATCH
-function pdUpdate(newpdObj) {
-  fetch(`${pdUrl}/${newpdObj.id}`, {
-    method: 'PATCH',
-    headers: {
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-    },
-    body: JSON.stringify(newpdObj)
-  })
-    .then(response => response.json())
-    .then(data => {
-      li = document.querySelector(`li[data-id="${data.id}"]`)
-      li.textContent = `Date:${data.date}, Location:${data.location}`
-
-      const deleteBtn = document.createElement("button")
-      const updateBtn = document.createElement("button")
-      
-      deleteBtn.textContent = "Cancel Playdate"
-      deleteBtn.dataset.id = data.id
-      deleteBtn.className = "btn-styles"
-      deleteBtn.classList.add("pd-delete")
-
-      updateBtn.textContent = "Update Playdate"
-      updateBtn.dataset.id = data.id
-      updateBtn.className = "pd-update"
-      updateBtn.classList.add("btn-styles")
-
-      li.append(deleteBtn, updateBtn)
     })
 }
 
@@ -158,7 +128,7 @@ modalContent.addEventListener("click", event => {
 
 //update playdate Button
 modalContent.addEventListener("click", event => {
-  if (event.target.matches(".pd-update")){
+  if (event.target.matches(".pd-update")) {
     const id = event.target.dataset.id
 
     oldPDObj = {
@@ -175,13 +145,13 @@ modalContent.addEventListener("click", event => {
 
 //add a new pet button
 newPetButton.addEventListener("click", event => {
-    renderPetForm()
+  renderPetForm()
 })
 
 /*************** Rendering Functions ****************/
 
 // Rendering Preliminary Data of all pets onto cards
-function renderPets(pet){
+function renderPets(pet) {
   const petDiv = document.createElement("div")
   const petImg = document.createElement("img")
   const petName = document.createElement("h2")
@@ -215,77 +185,92 @@ function renderPets(pet){
 
 
 // renderPet renders Pet's info onto modal content
-function renderPet(petObj){
+function renderPet(petObj) {
 
-  const petName = document.createElement("h2")
-  const petBreed = document.createElement("h3")
-  const petAge = document.createElement("h3")
-  const showPetText = document.createElement("p")
-  const petImg = document.createElement("img")
-  const petPersonality = document.createElement("h4")
-  const makePlaydateBtn = document.createElement("button")
-
- 
   modalContent.innerHTML = ""
-  petName.textContent = `Name: ${petObj.name}`
-  petBreed.textContent = `Breed: ${petObj.breed}`
-  petImg.src = petObj.img
-  petPersonality.textContent = `Personality: ${petObj.temper}`
 
-  // variable created so we can append playdates
-  allDates = document.createElement("ul")
-  allDates.textContent = "Playdates:"
-
-  makePlaydateBtn.textContent = "Wanna Play?"
-  makePlaydateBtn.dataset.id = petObj.id
-  makePlaydateBtn.id = ("pd-button")
-  makePlaydateBtn.className = ("btn-styles")
-  makePlaydateBtn.classList.add("wanna-play")
-
-  if (petObj.age > 1) {
-    petAge.textContent = `Age: ${petObj.age} years old`
-  } else {
-    petAge.textContent = `Age; ${petObj.age} year old`
-  }
-
+  modalContent.innerHTML = `
+  <img src=${petObj.img}>
+  <h2>Name: ${petObj.name}</h2>
+  <h3>Breed: ${petObj.breed}</h3>
+  <h3>Age: ${petObj.age > 1 ? `${petObj.age} years old` : `${petObj.age} year old` }</h3>
+  <h3>Personality: ${petObj.temper}</h3>
+  <ul class="pd-list"> Playdates:
+  </ul>
+  <button data-id${petObj.id} id="pd-button" class="btn-styles" "wanna-play"> Wanna Play? </button>
+  `
   playDates(petObj)
 
-  showPetText.append(petName, petBreed, petAge, petPersonality)
-  modalContent.append(petImg, showPetText, allDates, makePlaydateBtn)
 };
 
 
 // Iterates thru to render playdate info onto modal content
 function playDates(petObj) {
-  if(petObj.playdates) {
+  if (petObj.playdates) {
+    allDates = modalContent.querySelector(".pd-list")
+
     petObj.playdates.forEach(playdate => {
-    const date = document.createElement("li")
-    const deleteBtn = document.createElement("button")
-    const updateBtn = document.createElement("button")
 
-    deleteBtn.textContent = "Cancel Playdate"
-    deleteBtn.dataset.id = playdate.id
-    deleteBtn.className = "pd-delete"
-    deleteBtn.classList.add("btn-styles")
+      const date = document.createElement("li")
+      date.dataset.id = playdate.id
+      date.innerHTML = `
+      Date: ${playdate.date}, Location: ${playdate.location}
+      <button data-id=${playdate.id} class="pd-delete btn-styles"> Cancel Playdate</button>
+      <button data-id=${playdate.id} data-pet=${playdate.pet_id} data-pet2=${playdate.pet2_id} data-date=${playdate.date} data-location=${playdate.location} class="pd-update btn-styles"> Update Playdate</button>
+      `
 
-    updateBtn.textContent = "Update Playdate"
-    updateBtn.dataset.id = playdate.id
-    updateBtn.dataset.pet = playdate.pet_id
-    updateBtn.dataset.pet2 = playdate.pet2_id
-    updateBtn.dataset.date = playdate.date
-    updateBtn.dataset.location = playdate.location
-    updateBtn.className = "pd-update"
-    updateBtn.classList.add("btn-styles")
-
-    date.dataset.id = playdate.id
-    date.textContent = `Date: ${playdate.date}, Location: ${playdate.location}`
-
-    date.append(deleteBtn, updateBtn)
-    allDates.append(date)
-  })
-}
+      allDates.append(date)
+    })
+  }
 
 }
+
+// POST new playdate
+function createPlaydate(pdObj) {
+  const li = document.createElement("li")
+  li.dataset.id = pdObj.id
+  li.textContent = `Date: ${pdObj.date}, Location: ${pdObj.location}`
+
+  const deleteBtn = document.createElement("button")
+  const updateBtn = document.createElement("button")
+
+  deleteBtn.textContent = "Cancel Playdate"
+  deleteBtn.dataset.id = pdObj.id
+  deleteBtn.className = "btn-styles"
+  deleteBtn.classList.add("pd-delete")
+
+  updateBtn.textContent = "Update Playdate"
+  updateBtn.dataset.id = pdObj.id
+  updateBtn.className = "pd-update"
+  updateBtn.classList.add("btn-styles")
+
+  li.append(deleteBtn, updateBtn)
+  allDates.append(li)
+}
+
+
+// PATCH to update playdate
+function updatePD(playdateObj) {
+  li = document.querySelector(`li[data-id="${playdateObj.id}"]`)
+  li.textContent = `Date: ${playdateObj.date}, Location: ${playdateObj.location}`
+
+  const deleteBtn = document.createElement("button")
+  const updateBtn = document.createElement("button")
+
+  deleteBtn.textContent = "Cancel Playdate"
+  deleteBtn.dataset.id = playdateObj.id
+  deleteBtn.className = "btn-styles"
+  deleteBtn.classList.add("pd-delete")
+
+  updateBtn.textContent = "Update Playdate"
+  updateBtn.dataset.id = playdateObj.id
+  updateBtn.className = "pd-update"
+  updateBtn.classList.add("btn-styles")
+
+  li.append(deleteBtn, updateBtn)
+}
+
+
 
 /************ Modal Functions **********/
 //Toggle modal
@@ -306,7 +291,7 @@ modal.addEventListener("click", event => {
 
 // modal form 
 const createPlayDateForm = (petid) => {
-  
+
   const form = document.createElement("form")
   const locationInput = document.createElement("input")
   const dateInput = document.createElement("input")
@@ -320,7 +305,7 @@ const createPlayDateForm = (petid) => {
 
   locationInput.id = "location"
   locationInput.placeholder = "enter location..."
-  
+
   dateInput.type = "date"
   dateInput.id = "date"
 
@@ -329,10 +314,10 @@ const createPlayDateForm = (petid) => {
   friendInput.name = "friendlist"
   friendInput.form = "friendform"
 
-  for (i = 0; i < simplePetArray.length ; i++){
+  for (i = 0; i < simplePetArray.length; i++) {
     const petOption = document.createElement('option')
-    
-    if(simplePetArray[i].includes(' ')){
+
+    if (simplePetArray[i].includes(' ')) {
       let newPetOption = simplePetArray[i].replace(' ', '-')
       petOption.value = newPetOption
     }
@@ -340,7 +325,7 @@ const createPlayDateForm = (petid) => {
       petOption.value = simplePetArray[i]
     }
     // debugger
-    petOption.textContent = simplePetArray[i] 
+    petOption.textContent = simplePetArray[i]
     petOption.dataset.id = i + 1
 
     friendInput.append(petOption)
@@ -358,17 +343,18 @@ const createPlayDateForm = (petid) => {
       pet2_id: petOption.dataset.id,
       date: form.date.value,
       location: form.location.value
-    } 
-    
+    }
+
     pdPost(pdObj)
     // form.style.display = "none"
     form.remove()
-  
+
   })
 }
 
 //Updating Form 
 const playdateUpdate = (oldPDObj) => {
+  console.log(oldPDObj)
   const form = document.createElement("form")
   const locationInput = document.createElement("input")
   const dateInput = document.createElement("input")
@@ -381,14 +367,14 @@ const playdateUpdate = (oldPDObj) => {
 
   locationInput.id = "location"
   locationInput.value = oldPDObj.location
-  
+
   dateInput.type = "date"
   dateInput.value = oldPDObj.date
   dateInput.id = "date"
   form.append(dateInput, locationInput, submitBtn)
   modalContent.append(form)
 
-  submitBtn.addEventListener("click", event =>{
+  submitBtn.addEventListener("click", event => {
     event.preventDefault()
 
     newpdObj = {
@@ -397,11 +383,10 @@ const playdateUpdate = (oldPDObj) => {
       pet2_id: oldPDObj.pet2_id,
       date: form.date.value,
       location: form.location.value
-    } 
-    
+    }
+
     pdUpdate(newpdObj)
-    // hides form after update
-    form.style.display = "none"
+    form.remove()
   })
 
 }
@@ -409,50 +394,22 @@ const playdateUpdate = (oldPDObj) => {
 
 const renderPetForm = () => {
   const petForm = document.createElement("form")
-  const petNameInput = document.createElement("input")
-  const petTemperInput = document.createElement("input")
-  const petAgeInput = document.createElement("input")
-  const petBreedInput = document.createElement("input")
-  const petGenderInput = document.createElement("input")
-  const petSpeciesInput = document.createElement("input")
-  const petImageInput = document.createElement("input")
-  const petSubmitBtn = document.createElement("button")
 
-
-  petSubmitBtn.className = "submit-pet"
-  petSubmitBtn.classList.add("btn-styles")
-  petSubmitBtn.textContent = "Add Pet"
-  petSubmitBtn.type = "submit"
-
-  petNameInput.id = "name"
-  petNameInput.placeholder = "Pet Name"
-
-  petTemperInput.id = "temper"
-  petTemperInput.placeholder = "Pet's Personality"
-
-  petAgeInput.id = "age"
-  petAgeInput.type = "number"
-  petAgeInput.placeholder = "Pet's Age"
-
-  petBreedInput.id = "breed"
-  petBreedInput.placeholder = "Pet's Breed"
-
-  petGenderInput.id = "gender"
-  petGenderInput.placeholder = "Pet's Gender"
-
-  petSpeciesInput.id = "species"
-  petSpeciesInput.placeholder = "Pet's Species"
-
-  petImageInput.id = "image"
-  petImageInput.placeholder = "Url link of your Pet"
+  petForm.innerHTML = `
+  <input id="name" placeholder="Pet Name">
+  <input id="temper" placeholder="Pet's Personality">
+  <input id="age" type="number" placeholder="Pet's Age">
+  <input id="breed" placeholder="Pet's Breed">
+  <input id="gender" placeholder="Pet's Gender">
+  <input id="species" placeholder="Pet's Species">
+  <input id="image" placeholder="Url link of your Pet">
+  <button class="submit-btn btn-styles" type="submit"> Add Pet </button>
+  `
   
 
-  petForm.append(petNameInput, petTemperInput, petAgeInput, petBreedInput, petGenderInput,
-     petSpeciesInput, petImageInput, petSubmitBtn)
-  
   navSpan.append(petForm)
 
-  petForm.addEventListener("submit", event =>{
+  petForm.addEventListener("submit", event => {
     event.preventDefault()
 
     addPetObj = {
@@ -463,11 +420,11 @@ const renderPetForm = () => {
       gender: petForm.gender.value,
       species: petForm.species.value,
       img: petForm.image.value
-    } 
-    
+    }
+
     createPet(addPetObj)
 
-    petForm.style.display = "none"
+    petForm.remove()
   })
 }
 
