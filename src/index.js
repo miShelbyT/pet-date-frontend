@@ -45,7 +45,7 @@ function createPet(addPetObj) {
   })
     .then(response => response.json())
     .then(newPetObj => {
-      console.log(newPetObj)
+      // console.log(newPetObj, newPetObj.id)
       renderPets(newPetObj)
     })
 }
@@ -75,7 +75,7 @@ function pdPost(pdObj) {
   })
     .then(response => response.json())
     .then(pdObj => {
-      console.log(pdObj)
+      // console.log(pdObj)
       createPlaydate(pdObj)
     })
 }
@@ -111,7 +111,18 @@ function deletePlaydate(id) {
 }
 
 
-/***************** Buttons ***********************/
+/***************** Event Listeners ***********************/
+
+// render modal from Pet Deets
+petContainer.addEventListener("click", (event) => {
+  if (event.target.matches(".deets")) {
+    let petId = event.target.dataset.id
+    // console.log(petId)
+    toggleModal()
+    petDetails(petId)
+  }
+})
+
 // Add Playdates button
 modalContent.addEventListener("click", (event) => {
   if (event.target.matches("#pd-button")) {
@@ -172,10 +183,6 @@ function renderPets(pet) {
   petButton.textContent = "Pet Deets"
   petButton.dataset.id = pet.id
 
-  petButton.addEventListener("click", () => {
-    toggleModal()
-    petDetails(pet.id)
-  })
 
   petImg.src = pet.img
   petImg.alt = pet.name

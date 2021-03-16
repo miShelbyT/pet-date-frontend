@@ -31,8 +31,10 @@ body {
 }
 
 #pet-collection {
-    margin: 2rem;
+    margin: 0.5rem;
+    display: flex;
     flex-wrap: wrap;
+    justify-content: space-evenly;
 }
 
 .card {
@@ -110,7 +112,7 @@ body {
 
 .ul-div {
   position: absolute; 
-  bottom: 0px;
+  bottom: 7px;
 }
 
 
