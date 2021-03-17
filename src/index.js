@@ -27,7 +27,7 @@ function fetchPets() {
     .then((resp) => resp.json())
     .then((petArray) => {
       petArray.forEach((pet) => {
-        renderPets(pet)
+        renderPet(pet)
         simplePetArray.push(pet.name)
       })
     })
@@ -46,7 +46,7 @@ function createPet(addPetObj) {
     .then(response => response.json())
     .then(newPetObj => {
       // console.log(newPetObj, newPetObj.id)
-      renderPets(newPetObj)
+      renderPet(newPetObj)
     })
 }
 
@@ -56,7 +56,7 @@ function petDetails(id) {
   fetch(`${petUrl}/${id}`)
     .then((resp) => resp.json())
     .then((petObj) => {
-      renderPet(petObj)
+      renderPetOnModal(petObj)
     });
 };
 
@@ -113,7 +113,7 @@ function deletePlaydate(id) {
 
 /***************** Event Listeners ***********************/
 
-// render modal from Pet Deets
+// render modal from Pet Deets button
 petContainer.addEventListener("click", (event) => {
   if (event.target.matches(".deets")) {
     let petId = event.target.dataset.id
@@ -123,12 +123,31 @@ petContainer.addEventListener("click", (event) => {
   }
 })
 
-// Add Playdates button
+// show PD form
 modalContent.addEventListener("click", (event) => {
   if (event.target.matches("#pd-button")) {
-    const id = event.target.dataset.id
+    const petId = event.target.dataset.id
+    // passing this pet id for pd obj for fetch/POST
+    createPlayDateForm(petId)
+  }
+})
 
-    createPlayDateForm(id)
+// POST new PD
+modalContent.addEventListener("submit", event => {
+  if (event.target.matches("#submit-pd")) {
+    console.log("hi")
+    event.preventDefault()
+    // const petOption = document.querySelector(`option[value=${friendInput.value}]`)
+
+    pdObj = {
+      pet_id: event.target.dataset.id,
+      pet2_id: option.dataset.id.value,
+      date: form.date.value,
+      location: form.location.value
+    }
+    console.log(pdObj)
+
+    // pdPost(pdObj)
   }
 })
 
@@ -165,7 +184,7 @@ newPetButton.addEventListener("click", event => {
 /*************** Rendering Functions ****************/
 
 // Rendering Preliminary Data of all pets onto cards
-function renderPets(pet) {
+function renderPet(pet) {
   const petDiv = document.createElement("div")
   const petImg = document.createElement("img")
   const petName = document.createElement("h2")
@@ -194,8 +213,8 @@ function renderPets(pet) {
 }
 
 
-// renderPet renders Pet's info onto modal content
-function renderPet(petObj) {
+// renders Pet's info onto modal content
+function renderPetOnModal(petObj) {
 
   modalContent.innerHTML = ""
 
@@ -223,13 +242,13 @@ function renderPet(petObj) {
 };
 
 
-// Iterates thru to render playdate info onto modal content
+// renders playdate info onto modal content
 function playDates(petObj) {
   if (petObj.playdates) {
     allDates = modalContent.querySelector(".pd-list")
 
     petObj.playdates.forEach(playdate => {
-
+      
       const date = document.createElement("li")
       date.dataset.id = playdate.id
       date.innerHTML = `
@@ -296,30 +315,20 @@ modal.addEventListener("click", event => {
   }
 })
 
-// modal form 
-const createPlayDateForm = (petid) => {
+// show pd form on modal
+function createPlayDateForm(petId) {
 
   const form = document.createElement("form")
-  const locationInput = document.createElement("input")
-  const dateInput = document.createElement("input")
-  const friendInput = document.createElement("select")
-  const submitBtn = document.createElement("button")
 
+  form.innerHTML = `
+  <input type="date" id="date">
+  <select id="friends" name="friendlist">
+  <input id="location" name="location" placeholder="enter location...">
+  <button id="submit-pd" class="btn-styles" data-id=${petId} >Create Playdate</button>
+`
 
-  submitBtn.className = "submit-pd"
-  submitBtn.classList.add("btn-styles")
-  submitBtn.textContent = "Create Playdate"
+  const select = form.querySelector("#friends")
 
-  locationInput.id = "location"
-  locationInput.placeholder = "enter location..."
-
-  dateInput.type = "date"
-  dateInput.id = "date"
-
-  friendInput.type = "select"
-  friendInput.id = "friends"
-  friendInput.name = "friendlist"
-  friendInput.form = "friendform"
 
   for (i = 0; i < simplePetArray.length; i++) {
     const petOption = document.createElement('option')
@@ -335,41 +344,23 @@ const createPlayDateForm = (petid) => {
     petOption.textContent = simplePetArray[i]
     petOption.dataset.id = i + 1
 
-    friendInput.append(petOption)
+    select.append(petOption)
   }
 
-  form.append(dateInput, friendInput, locationInput, submitBtn)
   modalContent.append(form)
 
-  submitBtn.addEventListener("click", event => {
-    event.preventDefault()
-    const petOption = document.querySelector(`option[value=${friendInput.value}]`)
-    // console.log(petOption.dataset.id)
-    pdObj = {
-      pet_id: petid,
-      pet2_id: petOption.dataset.id,
-      date: form.date.value,
-      location: form.location.value
-    }
-
-    pdPost(pdObj)
-
-    form.remove()
-
-  })
 }
 
 //Updating Form 
-const playdateUpdate = (oldPDObj) => {
-  console.log(oldPDObj)
+function playdateUpdate(oldPDObj) {
   const form = document.createElement("form")
   const locationInput = document.createElement("input")
   const dateInput = document.createElement("input")
   const submitBtn = document.createElement("button")
 
 
-  submitBtn.className = "submit-pd"
-  submitBtn.classList.add("btn-styles")
+  submitBtn.id = "submit-pd"
+  submitBtn.className = "btn-styles"
   submitBtn.textContent = "Update Playdate"
 
   locationInput.id = "location"
@@ -380,21 +371,6 @@ const playdateUpdate = (oldPDObj) => {
   dateInput.id = "date"
   form.append(dateInput, locationInput, submitBtn)
   modalContent.append(form)
-
-  submitBtn.addEventListener("click", event => {
-    event.preventDefault()
-
-    newpdObj = {
-      id: oldPDObj.id,
-      pet_id: oldPDObj.petid,
-      pet2_id: oldPDObj.pet2_id,
-      date: form.date.value,
-      location: form.location.value
-    }
-
-    pdUpdate(newpdObj)
-    form.remove()
-  })
 
 }
 
