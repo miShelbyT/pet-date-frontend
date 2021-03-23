@@ -73,7 +73,7 @@ body {
 
 .modal-content {
   width: 65%;
-  height: 65%;
+  height: auto;
   margin-top: 2em;
   margin-left: auto;
   margin-right: auto;
@@ -111,8 +111,8 @@ body {
 }
 
 .ul-div {
-  position: absolute; 
-  bottom: 7px;
+  display: block;
+  margin-top: auto;
 }
 
 

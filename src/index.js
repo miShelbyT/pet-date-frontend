@@ -3,6 +3,7 @@
 const petContainer = document.querySelector("#pet-collection")
 const modal = document.querySelector(".modal-container")
 const modalContent = document.querySelector(".modal-content")
+let pdForm = modalContent.querySelector("form")
 const newPetButton = document.querySelector("#add-pet")
 const navSpan = document.querySelector("#nav-span")
 
@@ -45,9 +46,12 @@ function createPet(addPetObj) {
   })
     .then(response => response.json())
     .then(newPetObj => {
-      // console.log(newPetObj, newPetObj.id)
+      console.log(newPetObj.id)
       renderPet(newPetObj)
     })
+    .catch((error) => {
+      console.error('Error:', error);
+    });
 }
 
 
@@ -80,7 +84,7 @@ function pdPost(pdObj) {
     })
 }
 
-//  Playdate PATCH
+//  Playdate PATCH/update
 function pdUpdate(newpdObj) {
   fetch(`${pdUrl}/${newpdObj.id}`, {
     method: 'PATCH',
@@ -126,42 +130,47 @@ petContainer.addEventListener("click", (event) => {
 // show PD form
 modalContent.addEventListener("click", (event) => {
   if (event.target.matches("#pd-button")) {
+    console.log("hi")
     const petId = event.target.dataset.id
     // passing this pet id for pd obj for fetch/POST
     createPlayDateForm(petId)
   }
 })
 
-// POST new PD
-modalContent.addEventListener("submit", event => {
-  if (event.target.matches("#submit-pd")) {
-    console.log("hi")
-    event.preventDefault()
-    // const petOption = document.querySelector(`option[value=${friendInput.value}]`)
+// POST new PD -- need a separate event listener to update PD? or no?
+if (pdForm) {
+  pdForm.addEventListener("submit", event => {
+    if (event.target.matches("#submit-pd")) {
+      event.preventDefault()
+      console.log("here we are")
+      // const petOption = document.querySelector(`option[value=${friendInput.value}]`)
+      console.log(form)
+      pdObj = {
+        pet_id: event.target.dataset.id,
+        pet2_id: option.dataset.id.value,
+        date: form.date.value,
+        location: form.location.value
+      }
+      console.log(pdObj)
 
-    pdObj = {
-      pet_id: event.target.dataset.id,
-      pet2_id: option.dataset.id.value,
-      date: form.date.value,
-      location: form.location.value
+      pdPost(pdObj)
     }
-    console.log(pdObj)
-
-    // pdPost(pdObj)
-  }
-})
+  })
+}
 
 //delete playdate button
 modalContent.addEventListener("click", event => {
   if (event.target.matches(".pd-delete")) {
+    console.log("delete")
     const id = event.target.dataset.id
     deletePlaydate(id)
   }
 })
 
-//update playdate Button
+//event listener renders form for PD update
 modalContent.addEventListener("click", event => {
   if (event.target.matches(".pd-update")) {
+    console.log("hiii")
     const id = event.target.dataset.id
 
     oldPDObj = {
@@ -196,7 +205,7 @@ function renderPet(pet) {
   petName.textContent = pet.name
   petType.textContent = `Breed: ${pet.breed}`
 
-  petButton.classList.add("deets")
+  petButton.className = "deets"
   petButton.classList.add("btn-styles")
 
   petButton.textContent = "Pet Deets"
@@ -219,22 +228,24 @@ function renderPetOnModal(petObj) {
   modalContent.innerHTML = ""
 
   modalContent.innerHTML = `
-    <img src=${petObj.img}>
-      <div class="info">
-      <h2>Name: ${petObj.name}</h2>
-      <br>
-      <h3>Breed: ${petObj.breed}</h3>
-      <br>
-      <h3>Age: ${petObj.age > 1 ? `${petObj.age} years old` : `${petObj.age} year old`}</h3>
-      <br>
-      <h3>Personality: ${petObj.temper}</h3>
-      <br>
-        <div class="ul-div">
-          <ul class="pd-list"> Playdate Schedule:
-          </ul>
-        </div>
+  <div class="pet-info">
+    <div class="pet-img">
+      <img src=${petObj.img}>
+    </div>  
+        <h2>Name: ${petObj.name}</h2>
+        <br>
+        <h3>Breed: ${petObj.breed}</h3>
+        <br>
+        <h3>Age: ${petObj.age > 1 ? `${petObj.age} years old` : `${petObj.age} year old`}</h3>
+        <br>
+        <h3>Personality: ${petObj.temper}</h3>
+        <br>
         <button data-id=${petObj.id} id="pd-button" class="btn-styles" "wanna-play"> Wanna Play? </button>
-      </div>
+  </div>
+  <div class="ul-div">
+        <ul class="pd-list"> Playdate Schedule:
+        </ul>
+  </div>
   
   `
   playDates(petObj)
@@ -245,10 +256,11 @@ function renderPetOnModal(petObj) {
 // renders playdate info onto modal content
 function playDates(petObj) {
   if (petObj.playdates) {
+    // assigning allDates to ul pet list
     allDates = modalContent.querySelector(".pd-list")
 
     petObj.playdates.forEach(playdate => {
-      
+
       const date = document.createElement("li")
       date.dataset.id = playdate.id
       date.innerHTML = `
@@ -265,6 +277,9 @@ function playDates(petObj) {
 
 // POST new playdate
 function createPlaydate(pdObj) {
+  // assigning allDates to ul pet list
+  allDates = modalContent.querySelector(".pd-list")
+
   const li = document.createElement("li")
   li.dataset.id = pdObj.id
   li.innerHTML = `Date: ${pdObj.date}, Location: ${pdObj.location}
@@ -279,22 +294,10 @@ function createPlaydate(pdObj) {
 // PATCH to update playdate
 function updatePD(playdateObj) {
   li = document.querySelector(`li[data-id="${playdateObj.id}"]`)
-  li.textContent = `Date: ${playdateObj.date}, Location: ${playdateObj.location}`
-
-  const deleteBtn = document.createElement("button")
-  const updateBtn = document.createElement("button")
-
-  deleteBtn.textContent = "Cancel Playdate"
-  deleteBtn.dataset.id = playdateObj.id
-  deleteBtn.className = "btn-styles"
-  deleteBtn.classList.add("pd-delete")
-
-  updateBtn.textContent = "Update Playdate"
-  updateBtn.dataset.id = playdateObj.id
-  updateBtn.className = "pd-update"
-  updateBtn.classList.add("btn-styles")
-
-  li.append(deleteBtn, updateBtn)
+  li.innerHTML = `Date: ${pdObj.date}, Location: ${pdObj.location}
+  <button data-id=${pdObj.id} class="pd-delete btn-styles"> Cancel Playdate</button>
+  <button data-id=${pdObj.id} class="pd-update btn-styles"> Update Playdate</button>
+  `
 }
 
 
@@ -351,7 +354,7 @@ function createPlayDateForm(petId) {
 
 }
 
-//Updating Form 
+//Render Form To Update PD 
 function playdateUpdate(oldPDObj) {
   const form = document.createElement("form")
   const locationInput = document.createElement("input")
@@ -361,7 +364,7 @@ function playdateUpdate(oldPDObj) {
 
   submitBtn.id = "submit-pd"
   submitBtn.className = "btn-styles"
-  submitBtn.textContent = "Update Playdate"
+  submitBtn.textContent = "Confirm/Update Playdate"
 
   locationInput.id = "location"
   locationInput.value = oldPDObj.location
