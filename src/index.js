@@ -23,20 +23,21 @@ const pdUrl = "http://localhost:3000/api/v1/playdates"
 // PET FETCHES
 
 // GET all pets
-function fetchPets() {
-  fetch(petUrl)
-    .then((resp) => resp.json())
-    .then((petArray) => {
-      petArray.forEach((pet) => {
+async function fetchPets() {
+  let resp = await fetch(petUrl)
+  if (!resp.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+    let result = await resp.json()
+      return result.forEach(pet => {
         renderPet(pet)
         simplePetArray.push(pet.name)
-      })
     })
 }
 
 // POST new Pet
-function createPet(addPetObj) {
-  fetch(petUrl, {
+async function createPet(addPetObj) {
+  let resp = await fetch(petUrl, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -44,11 +45,12 @@ function createPet(addPetObj) {
     },
     body: JSON.stringify(addPetObj)
   })
-    .then(response => response.json())
-    .then(newPetObj => {
-      console.log(newPetObj.id)
-      renderPet(newPetObj)
-    })
+  if (!resp.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+   let newPet = await resp.json()
+      // console.log(newPet.id)
+      renderPet(newPet)
     .catch((error) => {
       console.error('Error:', error);
     });
@@ -408,6 +410,9 @@ const renderPetForm = () => {
     }
 
     createPet(addPetObj)
+    .catch(e => {
+      console.log('There has been a problem with your fetch operation: ' + e.message);
+    });
 
     petForm.remove()
   })
@@ -416,3 +421,6 @@ const renderPetForm = () => {
 
 // initial invocation, rendering of pets for app
 fetchPets()
+.catch(e => {
+  console.log('There has been a problem with your fetch operation: ' + e.message);
+});
