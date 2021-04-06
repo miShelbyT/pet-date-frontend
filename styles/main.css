@@ -35,6 +35,7 @@ body {
     display: flex;
     flex-wrap: wrap;
     justify-content: space-evenly;
+    background-image: url('https://i.imgur.com/I89NmLM.png');
 }
 
 .card {
@@ -47,6 +48,7 @@ body {
   display: inline-grid;
   margin: 1rem 2rem;
   box-shadow: 3px 4px #464e47; 
+  background-color: #6fb1e7;
 }
 
 .card h2, h4 {

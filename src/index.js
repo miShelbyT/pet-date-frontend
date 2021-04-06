@@ -7,6 +7,7 @@ let pdForm = modalContent.querySelector("form")
 const newPetButton = document.querySelector("#add-pet")
 const navSpan = document.querySelector("#nav-span")
 
+
 let simplePetArray = []
 
 let allDates;
@@ -28,11 +29,11 @@ async function fetchPets() {
   if (!resp.ok) {
     throw new Error(`HTTP error! status: ${response.status}`);
   }
-    let result = await resp.json()
-      return result.forEach(pet => {
-        renderPet(pet)
-        simplePetArray.push(pet.name)
-    })
+  let result = await resp.json()
+  return result.forEach(pet => {
+    renderPet(pet)
+    simplePetArray.push(pet.name)
+  })
 }
 
 // POST new Pet
@@ -48,9 +49,10 @@ async function createPet(addPetObj) {
   if (!resp.ok) {
     throw new Error(`HTTP error! status: ${response.status}`);
   }
-   let newPet = await resp.json()
-      // console.log(newPet.id)
-      renderPet(newPet)
+  let newPet = await resp.json()
+  console.log(newPet)
+  // pet returns undefined even though the fetch went through successfully. if i refresh the page the data renders without error
+  renderPet(newPet)
     .catch((error) => {
       console.error('Error:', error);
     });
@@ -156,6 +158,20 @@ if (pdForm) {
       console.log(pdObj)
 
       pdPost(pdObj)
+    } else if(event.target.matches("update-btn")) {
+      event.preventDefault()
+      console.log("here we are again")
+      // const petOption = document.querySelector(`option[value=${friendInput.value}]`)
+      console.log(form)
+      pdObj = {
+        pet_id: event.target.dataset.id,
+        pet2_id: option.dataset.id.value,
+        date: form.date.value,
+        location: form.location.value
+      }
+      console.log(pdObj)
+
+      pdUpdate(pdObj)
     }
   })
 }
@@ -263,15 +279,15 @@ function playDates(petObj) {
 
     petObj.playdates.forEach(playdate => {
 
-      const date = document.createElement("li")
-      date.dataset.id = playdate.id
-      date.innerHTML = `
+      const li = document.createElement("li")
+      li.dataset.id = playdate.id
+      li.innerHTML = `
       Date: ${playdate.date}, Location: ${playdate.location}
       <button data-id=${playdate.id} class="pd-delete btn-styles"> Cancel Playdate</button>
       <button data-id=${playdate.id} data-pet=${playdate.pet_id} data-pet2=${playdate.pet2_id} data-date=${playdate.date} data-location=${playdate.location} class="pd-update btn-styles"> Update Playdate</button>
       `
 
-      allDates.append(date)
+      allDates.append(li)
     })
   }
 
@@ -366,6 +382,7 @@ function playdateUpdate(oldPDObj) {
 
   submitBtn.id = "submit-pd"
   submitBtn.className = "btn-styles"
+  submitBtn.classList.add("update-btn")
   submitBtn.textContent = "Confirm/Update Playdate"
 
   locationInput.id = "location"
@@ -410,9 +427,9 @@ const renderPetForm = () => {
     }
 
     createPet(addPetObj)
-    .catch(e => {
-      console.log('There has been a problem with your fetch operation: ' + e.message);
-    });
+      .catch(e => {
+        console.log('There has been a problem with your fetch operation: ' + e.message);
+      });
 
     petForm.remove()
   })
@@ -421,6 +438,6 @@ const renderPetForm = () => {
 
 // initial invocation, rendering of pets for app
 fetchPets()
-.catch(e => {
-  console.log('There has been a problem with your fetch operation: ' + e.message);
-});
+  .catch(e => {
+    console.log('There has been a problem with your fetch operation: ' + e.message);
+  });

@@ -14,3 +14,5 @@ We created this app with the following:
 
 ## A big thanks to our Flatiron cohort-mates for sending us their pet information.
 
+Background design from toptal: https://www.toptal.com/designers/subtlepatterns/tiny-squares-pattern/
+
