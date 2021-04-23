@@ -47,12 +47,12 @@ async function createPet(addPetObj) {
     body: JSON.stringify(addPetObj)
   })
   if (!resp.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`);
+    throw new Error(`HTTP error! status: ${resp.status}`);
   }
   let newPet = await resp.json()
   console.log(newPet)
-  // pet returns undefined even though the fetch went through successfully. if i refresh the page the data renders without error
-  renderPet(newPet)
+  // pet returns undefined in console even though the fetch went through successfully and data renders fine in new pet card. data will not render in modal until i refresh the page
+  return renderPet(newPet)
     .catch((error) => {
       console.error('Error:', error);
     });
